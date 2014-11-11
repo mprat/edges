@@ -26,20 +26,20 @@ shrink=opts.shrink; nTypes=1; chns=cell(1,opts.nChns); k=0;
 if(size(I,3)>3), nTypes=2; Is={I(:,:,1:3),I(:,:,4:end)}; end
 for t=1:nTypes
   if(nTypes>1), I=Is{t}; end
-  if(size(I,3)==1), cs='gray'; else cs='luv'; end; I=rgbConvert(I,cs);
-  Ishrink=imResample(I,1/shrink); k=k+1; chns{k}=Ishrink;
+  if(size(I,3)==1), cs='gray'; else cs='luv'; end; I=toolbox.channels.rgbConvert(I,cs);
+  Ishrink=toolbox.channels.imResample(I,1/shrink); k=k+1; chns{k}=Ishrink;
   for i = 1:2, s=2^(i-1);
-    if(s==shrink), I1=Ishrink; else I1=imResample(I,1/s); end
-    I1 = convTri( I1, opts.grdSmooth );
-    [M,O] = gradientMag( I1, 0, opts.normRad, .01 );
-    H = gradientHist( M, O, max(1,shrink/s), opts.nOrients, 0 );
-    k=k+1; chns{k}=imResample(M,s/shrink);
-    k=k+1; chns{k}=imResample(H,max(1,s/shrink));
+    if(s==shrink), I1=Ishrink; else I1=toolbox.channels.imResample(I,1/s); end
+    I1 = toolbox.channels.convTri( I1, opts.grdSmooth );
+    [M,O] = toolbox.channels.gradientMag( I1, 0, opts.normRad, .01 );
+    H = toolbox.channels.gradientHist( M, O, max(1,shrink/s), opts.nOrients, 0 );
+    k=k+1; chns{k}=toolbox.channels.imResample(M,s/shrink);
+    k=k+1; chns{k}=toolbox.channels.imResample(H,max(1,s/shrink));
   end
 end
 chns=cat(3,chns{1:k}); assert(size(chns,3)==opts.nChns);
 chnSm=opts.chnSmooth/shrink; if(chnSm>1), chnSm=round(chnSm); end
 simSm=opts.simSmooth/shrink; if(simSm>1), simSm=round(simSm); end
-chnsReg=convTri(chns,chnSm); chnsSim=convTri(chns,simSm);
+chnsReg=toolbox.channels.convTri(chns,chnSm); chnsSim=toolbox.channels.convTri(chns,simSm);
 
 end

@@ -67,7 +67,7 @@ function bbs = edgeBoxes( I, model, varargin )
 dfs={'name','', 'alpha',.65, 'beta',.75, 'minScore',.01, 'maxBoxes',1e4,...
   'edgeMinMag',.1, 'edgeMergeThr',.5, 'clusterMinMag',.5, ...
   'maxAspectRatio',3, 'minBoxArea',1000, 'gamma',2, 'kappa',1.5 };
-o=getPrmDflt(varargin,dfs,1); if(nargin==0), bbs=o; return; end
+o=toolbox.matlab.getPrmDflt(varargin,dfs,1); if(nargin==0), bbs=o; return; end
 
 % run detector possibly over multiple images and optionally save results
 f=o.name; if(~isempty(f) && exist(f,'file')), bbs=1; return; end
@@ -81,10 +81,10 @@ end
 function bbs = edgeBoxesImg( I, model, o )
 % Generate Edge Boxes object proposals in single image.
 if(all(ischar(I))), I=imread(I); end
-model.opts.nms=0; [E,O]=edgesDetect(I,model);
-if(0), E=gradientMag(convTri(single(I),4)); E=E/max(E(:)); end
-E=edgesNmsMex(E,O,2,0,1,model.opts.nThreads);
-bbs=edgeBoxesMex(E,O,o.alpha,o.beta,o.minScore,o.maxBoxes,...
+model.opts.nms=0; [E,O]=edges.edgesDetect(I,model);
+if(0), E=toolbox.channels.gradientMag(toolbox.channels.convTri(single(I),4)); E=E/max(E(:)); end
+E=edges.private.edgesNmsMex(E,O,2,0,1,model.opts.nThreads);
+bbs=edges.private.edgeBoxesMex(E,O,o.alpha,o.beta,o.minScore,o.maxBoxes,...
   o.edgeMinMag,o.edgeMergeThr,o.clusterMinMag,...
   o.maxAspectRatio,o.minBoxArea,o.gamma,o.kappa);
 end
